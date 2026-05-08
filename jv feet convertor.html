@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Square Feet Converter</title>
+
+  <style>
+    *{
+      box-sizing:border-box;
+      font-family:Arial, sans-serif;
+    }
+
+    body{
+      margin:0;
+      background:#f4f7fb;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      min-height:100vh;
+    }
+
+    .container{
+      background:#fff;
+      padding:30px;
+      width:420px;
+      border-radius:12px;
+      box-shadow:0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    h1{
+      text-align:center;
+      color:#333;
+      margin-bottom:25px;
+    }
+
+    label{
+      font-weight:bold;
+      display:block;
+      margin-top:15px;
+      color:#444;
+    }
+
+    input{
+      width:100%;
+      padding:12px;
+      margin-top:6px;
+      border:1px solid #ccc;
+      border-radius:8px;
+      font-size:16px;
+    }
+
+    button{
+      width:100%;
+      padding:14px;
+      margin-top:25px;
+      border:none;
+      border-radius:8px;
+      background:#007bff;
+      color:white;
+      font-size:16px;
+      cursor:pointer;
+      transition:0.3s;
+    }
+
+    button:hover{
+      background:#0056b3;
+    }
+
+    .result{
+      margin-top:25px;
+      background:#eef5ff;
+      padding:15px;
+      border-radius:8px;
+      font-size:18px;
+      color:#222;
+      line-height:1.8;
+    }
+
+    .note{
+      margin-top:15px;
+      font-size:13px;
+      color:#666;
+      line-height:1.6;
+    }
+
+    .highlight{
+      font-weight:bold;
+      color:#007bff;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Square Feet Converter</h1>
+
+    <label for="height">Height (mm)</label>
+    <input type="number" id="height" placeholder="Enter height in mm">
+
+    <label for="width">Width (mm)</label>
+    <input type="number" id="width" placeholder="Enter width in mm">
+
+    <button onclick="calculate()">Calculate</button>
+
+    <div class="result" id="result">
+      Result will appear here
+    </div>
+
+    <div class="note">
+      <strong>Rules:</strong><br>
+      • Height below 4000mm → add 75mm<br>
+      • Height 4000mm and above → add 200mm<br><br>
+
+      • Width 1000mm or less → add 75mm<br>
+      • Add 37.5mm ONLY after every full 500mm increase<br><br>
+
+      Examples:<br>
+      • 1200mm → still +75mm<br>
+      • 1499mm → still +75mm<br>
+      • 1500mm → +112.5mm<br>
+      • 2000mm → +150mm<br><br>
+
+      Formula:<br>
+      ((Adjusted Height × Adjusted Width) ÷ 1,000,000) × 10.764
+    </div>
+  </div>
+
+  <script>
+    function calculate() {
+
+      let height = parseFloat(document.getElementById("height").value);
+      let width = parseFloat(document.getElementById("width").value);
+
+      if (isNaN(height) || isNaN(width) || height <= 0 || width <= 0) {
+        document.getElementById("result").innerHTML =
+          "Please enter valid values.";
+        return;
+      }
+
+      // HEIGHT RULE
+      let adjustedHeight;
+
+      if (height < 4000) {
+        adjustedHeight = height + 75;
+      } else {
+        adjustedHeight = height + 200;
+      }
+
+      // WIDTH RULE
+      let widthAddition = 75;
+
+      if (width > 1000) {
+
+        let extraWidth = width - 1000;
+
+        // ONLY count completed 500mm blocks
+        let increments = Math.floor(extraWidth / 500);
+
+        widthAddition += increments * 37.5;
+      }
+
+      let adjustedWidth = width + widthAddition;
+
+      // AREA
+      let sqm = (adjustedHeight * adjustedWidth) / 1000000;
+
+      let sqft = sqm * 10.764;
+
+      // DISPLAY
+      document.getElementById("result").innerHTML = `
+        <div>Adjusted Height:
+          <span class="highlight">${adjustedHeight.toFixed(2)} mm</span>
+        </div>
+
+        <div>Adjusted Width:
+          <span class="highlight">${adjustedWidth.toFixed(2)} mm</span>
+        </div>
+
+        <div>Square Meter:
+          <span class="highlight">${sqm.toFixed(3)} m²</span>
+        </div>
+
+        <div>Square Feet:
+          <span class="highlight">${sqft.toFixed(2)} sq ft</span>
+        </div>
+      `;
+    }
+  </script>
+
+</body>
+</html>
